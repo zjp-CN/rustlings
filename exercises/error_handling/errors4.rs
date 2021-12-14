@@ -1,8 +1,6 @@
 // errors4.rs
 // Make this test pass! Execute `rustlings hint errors4` for hints :)
 
-// I AM NOT DONE
-
 #[derive(PartialEq, Debug)]
 struct PositiveNonzeroInteger(u64);
 
@@ -14,16 +12,17 @@ enum CreationError {
 
 impl PositiveNonzeroInteger {
     fn new(value: i64) -> Result<PositiveNonzeroInteger, CreationError> {
-        Ok(PositiveNonzeroInteger(value as u64))
+        match value {
+            0 => Err(CreationError::Zero),
+            1.. => Ok(PositiveNonzeroInteger(value as u64)),
+            _ => Err(CreationError::Negative),
+        }
     }
 }
 
 #[test]
 fn test_creation() {
     assert!(PositiveNonzeroInteger::new(10).is_ok());
-    assert_eq!(
-        Err(CreationError::Negative),
-        PositiveNonzeroInteger::new(-10)
-    );
+    assert_eq!(Err(CreationError::Negative), PositiveNonzeroInteger::new(-10));
     assert_eq!(Err(CreationError::Zero), PositiveNonzeroInteger::new(0));
 }

@@ -16,10 +16,8 @@
 // 4. Complete the partial implementation of `Display` for
 //    `ParseClimateError`.
 
-// I AM NOT DONE
-
 use std::error::Error;
-use std::fmt::{self, Display, Formatter};
+use std::fmt::{self, Debug, Display, Formatter};
 use std::num::{ParseFloatError, ParseIntError};
 use std::str::FromStr;
 
@@ -37,9 +35,7 @@ enum ParseClimateError {
 // This `From` implementation allows the `?` operator to work on
 // `ParseIntError` values.
 impl From<ParseIntError> for ParseClimateError {
-    fn from(e: ParseIntError) -> Self {
-        Self::ParseInt(e)
-    }
+    fn from(e: ParseIntError) -> Self { Self::ParseInt(e) }
 }
 
 // This `From` implementation allows the `?` operator to work on
@@ -47,11 +43,13 @@ impl From<ParseIntError> for ParseClimateError {
 impl From<ParseFloatError> for ParseClimateError {
     fn from(e: ParseFloatError) -> Self {
         // TODO: Complete this function
+        Self::ParseFloat(e)
     }
 }
 
 // TODO: Implement a missing trait so that `main()` below will compile. It
 // is not necessary to implement any methods inside the missing trait.
+impl Error for ParseClimateError {}
 
 // The `Display` trait allows for other code to obtain the error formatted
 // as a user-visible string.
@@ -62,7 +60,10 @@ impl Display for ParseClimateError {
         // Imports the variants to make the following code more compact.
         use ParseClimateError::*;
         match self {
+            Empty => write!(f, "empty input"),
+            BadLen => write!(f, "incorrect number of fields"),
             NoCity => write!(f, "no city name"),
+            ParseInt(e) => write!(f, "error parsing year: {}", e),
             ParseFloat(e) => write!(f, "error parsing temperature: {}", e),
         }
     }
@@ -85,11 +86,16 @@ struct Climate {
 // 6. Return an `Ok` value containing the completed `Climate` value.
 impl FromStr for Climate {
     type Err = ParseClimateError;
+
     // TODO: Complete this function by making it handle the missing error
     // cases.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s.len() == 0 {
+            return Err(ParseClimateError::Empty);
+        }
         let v: Vec<_> = s.split(',').collect();
         let (city, year, temp) = match &v[..] {
+            ["", ..] => return Err(ParseClimateError::NoCity),
             [city, year, temp] => (city.to_string(), year, temp),
             _ => return Err(ParseClimateError::BadLen),
         };
@@ -141,10 +147,7 @@ mod test {
         assert!(matches!(res, Err(ParseClimateError::ParseInt(_))));
         let err = res.unwrap_err();
         if let ParseClimateError::ParseInt(ref inner) = err {
-            assert_eq!(
-                err.to_string(),
-                format!("error parsing year: {}", inner.to_string())
-            );
+            assert_eq!(err.to_string(), format!("error parsing year: {}", inner.to_string()));
         } else {
             unreachable!();
         };
@@ -155,10 +158,7 @@ mod test {
         assert!(matches!(res, Err(ParseClimateError::ParseInt(_))));
         let err = res.unwrap_err();
         if let ParseClimateError::ParseInt(ref inner) = err {
-            assert_eq!(
-                err.to_string(),
-                format!("error parsing year: {}", inner.to_string())
-            );
+            assert_eq!(err.to_string(), format!("error parsing year: {}", inner.to_string()));
         } else {
             unreachable!();
         };
@@ -169,10 +169,8 @@ mod test {
         assert!(matches!(res, Err(ParseClimateError::ParseFloat(_))));
         let err = res.unwrap_err();
         if let ParseClimateError::ParseFloat(ref inner) = err {
-            assert_eq!(
-                err.to_string(),
-                format!("error parsing temperature: {}", inner.to_string())
-            );
+            assert_eq!(err.to_string(),
+                       format!("error parsing temperature: {}", inner.to_string()));
         } else {
             unreachable!();
         };
@@ -180,14 +178,10 @@ mod test {
     #[test]
     fn test_parse_good() {
         let res = "Munich,2015,23.1".parse::<Climate>();
-        assert_eq!(
-            res,
-            Ok(Climate {
-                city: "Munich".to_string(),
-                year: 2015,
-                temp: 23.1,
-            })
-        );
+        assert_eq!(res,
+                   Ok(Climate { city: "Munich".to_string(),
+                                year: 2015,
+                                temp: 23.1, }));
     }
     #[test]
     #[ignore]

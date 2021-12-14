@@ -4,34 +4,33 @@
 // Make the code compile and the tests pass!
 // If you have issues execute `rustlings hint structs3`
 
-// I AM NOT DONE
-
 #[derive(Debug)]
 struct Package {
-    sender_country: String,
+    sender_country:    String,
     recipient_country: String,
-    weight_in_grams: i32,
+    weight_in_grams:   i32,
 }
 
 impl Package {
     fn new(sender_country: String, recipient_country: String, weight_in_grams: i32) -> Package {
         if weight_in_grams <= 0 {
             // Something goes here...
+            panic!("Weight must be positive number!")
         } else {
-            Package {
-                sender_country,
-                recipient_country,
-                weight_in_grams,
-            }
+            Package { sender_country,
+                      recipient_country,
+                      weight_in_grams }
         }
     }
 
-    fn is_international(&self) -> ??? {
+    fn is_international(&self) -> bool {
         // Something goes here...
+        self.sender_country != self.recipient_country
     }
 
-    fn get_fees(&self, cents_per_gram: i32) -> ??? {
+    fn get_fees(&self, cents_per_gram: i32) -> i32 {
         // Something goes here...
+        self.weight_in_grams * cents_per_gram
     }
 }
 

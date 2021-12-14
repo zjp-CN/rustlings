@@ -10,8 +10,6 @@
 //
 // Make the code compile and the tests pass.
 
-// I AM NOT DONE
-
 use std::collections::HashMap;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -34,6 +32,7 @@ fn count_for(map: &HashMap<String, Progress>, value: Progress) -> usize {
 fn count_iterator(map: &HashMap<String, Progress>, value: Progress) -> usize {
     // map is a hashmap with String keys and Progress values.
     // map = { "variables1": Complete, "from_str": None, ... }
+    map.into_iter().filter(|(_, v)| v == &&value).count()
 }
 
 fn count_collection_for(collection: &[HashMap<String, Progress>], value: Progress) -> usize {
@@ -52,6 +51,7 @@ fn count_collection_iterator(collection: &[HashMap<String, Progress>], value: Pr
     // collection is a slice of hashmaps.
     // collection = [{ "variables1": Complete, "from_str": None, ... },
     //     { "variables2": Complete, ... }, ... ]
+    collection.into_iter().flatten().filter(|(_, v)| v == &&value).count()
 }
 
 #[cfg(test)]
@@ -67,28 +67,20 @@ mod tests {
     #[test]
     fn count_equals_for() {
         let map = get_map();
-        assert_eq!(
-            count_for(&map, Progress::Complete),
-            count_iterator(&map, Progress::Complete)
-        );
+        assert_eq!(count_for(&map, Progress::Complete), count_iterator(&map, Progress::Complete));
     }
 
     #[test]
     fn count_collection_complete() {
         let collection = get_vec_map();
-        assert_eq!(
-            6,
-            count_collection_iterator(&collection, Progress::Complete)
-        );
+        assert_eq!(6, count_collection_iterator(&collection, Progress::Complete));
     }
 
     #[test]
     fn count_collection_equals_for() {
         let collection = get_vec_map();
-        assert_eq!(
-            count_collection_for(&collection, Progress::Complete),
-            count_collection_iterator(&collection, Progress::Complete)
-        );
+        assert_eq!(count_collection_for(&collection, Progress::Complete),
+                   count_collection_iterator(&collection, Progress::Complete));
     }
 
     fn get_map() -> HashMap<String, Progress> {
