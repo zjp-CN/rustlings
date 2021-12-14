@@ -2,6 +2,12 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-112-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
+> 完成时间：10 小时左右（两天的下午和晚上）
+> 
+> 非常不建议在没掌握 Rust 语法的情况下使用 rustlings。
+> 
+> 建议用 Rust 写过小型程序之后使用 rustlings，以此检验你的编写习惯和思考方式。
+
 # rustlings 🦀❤️
 
 Greetings and welcome to `rustlings`. This project contains small exercises to get you used to reading and writing Rust code. This includes reading and responding to compiler messages!
